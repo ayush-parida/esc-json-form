@@ -1,1 +1,0 @@
-import{_ as i,o as a,c as n,a0 as t}from"./chunks/framework.D-L4ICHU.js";const d=JSON.parse('{"title":"Core API","description":"","frontmatter":{},"headers":[],"relativePath":"core-api.md","filePath":"core-api.md"}'),h={name:"core-api.md"};function p(e,s,l,k,E,r){return a(),n("div",null,[...s[0]||(s[0]=[t("",6)])])}const g=i(h,[["render",p]]);export{d as __pageData,g as default};
