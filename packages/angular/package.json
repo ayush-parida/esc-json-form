@@ -1,0 +1,31 @@
+{
+  "name": "esc-json-form-angular",
+  "version": "0.1.0",
+  "description": "Angular renderer for ESC JSON Form",
+  "type": "module",
+  "main": "dist/public-api.js",
+  "types": "dist/public-api.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/public-api.d.ts",
+      "import": "./dist/public-api.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=16",
+    "@angular/core": ">=16"
+  },
+  "dependencies": {
+    "esc-json-form-core": "^0.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT"
+}

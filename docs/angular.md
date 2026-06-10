@@ -1,0 +1,27 @@
+# Angular Usage
+
+```ts
+import { Component } from "@angular/core";
+import { JsonFormEditorComponent } from "esc-json-form-angular";
+
+@Component({
+  selector: "app-root",
+  standalone: true,
+  imports: [JsonFormEditorComponent],
+  template: `
+    <esc-json-form-editor
+      [value]="json"
+      (valueChange)="json = $event"
+    ></esc-json-form-editor>
+  `,
+})
+export class AppComponent {
+  json = { name: "test", age: 2 };
+}
+```
+
+Schema input is optional:
+
+```html
+<esc-json-form-editor [value]="json"></esc-json-form-editor>
+```

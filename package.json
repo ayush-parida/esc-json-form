@@ -1,0 +1,33 @@
+{
+  "name": "esc-json-form-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "JSON-to-form editor libraries for core, React, and Angular",
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w esc-json-form-core && npm run build -w esc-json-form-react && npm run build -w esc-json-form-angular",
+    "clean": "rm -rf packages/*/dist",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish",
+    "sample:dev": "npm run dev -w esc-json-form-react-sample",
+    "sample:build": "npm run build -w esc-json-form-react-sample",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "docs:deploy": "npm run docs:build && npx gh-pages -d docs/.vitepress/dist -b gh-pages"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.6",
+    "@angular/common": "^19.2.0",
+    "@angular/core": "^19.2.0",
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "typescript": "^5.7.0",
+    "vitepress": "^1.6.4"
+  },
+  "license": "MIT"
+}
