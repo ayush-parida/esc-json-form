@@ -1,6 +1,6 @@
 {
   "name": "esc-json-form-monorepo",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "JSON-to-form editor libraries for core, React, and Angular",
   "workspaces": [

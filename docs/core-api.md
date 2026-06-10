@@ -34,3 +34,23 @@ store.setSchema({
   },
 });
 ```
+
+## Supported Value Types
+
+Core `JsonValueType` supports:
+
+- `string`
+- `number`
+- `boolean`
+- `null`
+- `object`
+- `array`
+
+Renderer-specific editor mode:
+
+- React/Angular add a `textarea` UI mode for strings.
+
+Date values:
+
+- `date` is not a separate core type.
+- Store dates as `string` values (for example, ISO format).

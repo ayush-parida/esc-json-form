@@ -10,8 +10,10 @@ import {
   FormNode,
   ValidationError,
 } from "esc-json-form-core";
+import { RichTextEditor } from "esc-editor";
+import "esc-editor/styles.css";
 
-type FieldEditorType = JsonValueType | "textarea";
+type FieldEditorType = JsonValueType | "textarea" | "datetime" | "textEditor";
 
 export interface JsonFormEditorProps {
   value: JsonValue;
@@ -97,8 +99,8 @@ export function JsonFormEditor(props: JsonFormEditorProps): ReactElement {
         onTypeChange={(path, type) => {
           const key = pathToKey(path);
 
-          if (type === "textarea") {
-            setEditorTypeByPath((prev) => ({ ...prev, [key]: "textarea" }));
+          if (isStringEditorType(type)) {
+            setEditorTypeByPath((prev) => ({ ...prev, [key]: type }));
             store.setTypeAtPath(path, "string");
             return;
           }
@@ -116,13 +118,27 @@ export function JsonFormEditor(props: JsonFormEditorProps): ReactElement {
         onRemoveArrayItem={(path, index) => {
           store.removeArrayItem(path, index);
         }}
-        onAddObjectKey={(path, valueType) => {
-          const key = window.prompt("Enter new key name");
-          if (!key) {
-            return;
+        onAddObjectKey={(path, key, valueType) => {
+          const normalizedKey = key.trim();
+          if (!normalizedKey) {
+            return false;
           }
 
-          store.addObjectKey(path, key, valueType);
+          const baseType = toJsonValueType(valueType);
+          const added = store.addObjectKey(path, normalizedKey, baseType);
+          if (!added) {
+            return false;
+          }
+
+          if (isStringEditorType(valueType)) {
+            const childPathKey = pathToKey([...path, normalizedKey]);
+            setEditorTypeByPath((prev) => ({ ...prev, [childPathKey]: valueType }));
+          }
+
+          return true;
+        }}
+        onRemoveObjectKey={(path, key) => {
+          return store.removeObjectKey(path, key);
         }}
       />
     </div>
@@ -137,7 +153,8 @@ interface FormNodeViewProps {
   onTypeChange: (path: PathSegment[], type: FieldEditorType) => void;
   onAddArrayItem: (path: PathSegment[]) => void;
   onRemoveArrayItem: (path: PathSegment[], index: number) => void;
-  onAddObjectKey: (path: PathSegment[], valueType: JsonValueType) => void;
+  onAddObjectKey: (path: PathSegment[], key: string, valueType: FieldEditorType) => boolean;
+  onRemoveObjectKey: (path: PathSegment[], key: string) => boolean;
 }
 
 function FormNodeView(props: FormNodeViewProps): ReactElement {
@@ -150,8 +167,26 @@ function FormNodeView(props: FormNodeViewProps): ReactElement {
     onAddArrayItem,
     onRemoveArrayItem,
     onAddObjectKey,
+    onRemoveObjectKey,
   } = props;
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isAddingKey, setIsAddingKey] = useState(false);
+  const [newKeyName, setNewKeyName] = useState("");
+  const [newKeyType, setNewKeyType] = useState<FieldEditorType>("string");
+  const [addKeyError, setAddKeyError] = useState("");
+
+  const submitAddObjectKey = (): void => {
+    const added = onAddObjectKey(node.path, newKeyName, newKeyType);
+    if (!added) {
+      setAddKeyError("Key already exists or is invalid");
+      return;
+    }
+
+    setNewKeyName("");
+    setNewKeyType("string");
+    setAddKeyError("");
+    setIsAddingKey(false);
+  };
 
   if (node.kind === "section") {
     return (
@@ -176,15 +211,64 @@ function FormNodeView(props: FormNodeViewProps): ReactElement {
             </button>
           )}
           {node.valueType === "object" && (
-            <button
-              type="button"
-              style={styles.actionButton}
-              onClick={() => onAddObjectKey(node.path, "string")}
-            >
-              Add Key
-            </button>
+            <>
+              <button
+                type="button"
+                style={styles.actionButton}
+                onClick={() => {
+                  setIsAddingKey((prev) => !prev);
+                  setAddKeyError("");
+                }}
+              >
+                {isAddingKey ? "Close" : "Add Key"}
+              </button>
+              {isAddingKey && (
+                <div style={styles.addKeyRow}>
+                  <input
+                    type="text"
+                    value={newKeyName}
+                    placeholder="newKey"
+                    onChange={(event) => {
+                      setNewKeyName(event.target.value);
+                      if (addKeyError) {
+                        setAddKeyError("");
+                      }
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        submitAddObjectKey();
+                      }
+                    }}
+                    style={styles.input}
+                  />
+                  <select
+                    value={newKeyType}
+                    onChange={(event) => setNewKeyType(event.target.value as FieldEditorType)}
+                    style={styles.select}
+                  >
+                    <option value="string">string</option>
+                    <option value="textarea">textarea</option>
+                    <option value="textEditor">text editor</option>
+                    <option value="datetime">datetime</option>
+                    <option value="number">number</option>
+                    <option value="boolean">boolean</option>
+                    <option value="null">null</option>
+                    <option value="object">object</option>
+                    <option value="array">array</option>
+                  </select>
+                  <button
+                    type="button"
+                    style={styles.actionButton}
+                    onClick={submitAddObjectKey}
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
+        {addKeyError && <div style={styles.errorText}>{addKeyError}</div>}
         {isExpanded && (
           <div style={styles.sectionChildren}>
             {node.children.map((child) => (
@@ -198,12 +282,22 @@ function FormNodeView(props: FormNodeViewProps): ReactElement {
                   onAddArrayItem={onAddArrayItem}
                   onRemoveArrayItem={onRemoveArrayItem}
                   onAddObjectKey={onAddObjectKey}
+                  onRemoveObjectKey={onRemoveObjectKey}
                 />
                 {node.valueType === "array" && typeof child.path[child.path.length - 1] === "number" && (
                   <button
                     type="button"
                     style={styles.removeButton}
                     onClick={() => onRemoveArrayItem(node.path, child.path[child.path.length - 1] as number)}
+                  >
+                    Remove
+                  </button>
+                )}
+                {node.valueType === "object" && typeof child.path[child.path.length - 1] === "string" && (
+                  <button
+                    type="button"
+                    style={styles.removeButton}
+                    onClick={() => onRemoveObjectKey(node.path, child.path[child.path.length - 1] as string)}
                   >
                     Remove
                   </button>
@@ -230,9 +324,13 @@ function FormNodeView(props: FormNodeViewProps): ReactElement {
         >
           <option value="string">string</option>
           <option value="textarea">textarea</option>
+          <option value="textEditor">text editor</option>
+          <option value="datetime">datetime</option>
           <option value="number">number</option>
           <option value="boolean">boolean</option>
           <option value="null">null</option>
+          <option value="object">object</option>
+          <option value="array">array</option>
         </select>
         {selectedEditorType === "boolean" ? (
           <select
@@ -252,6 +350,22 @@ function FormNodeView(props: FormNodeViewProps): ReactElement {
             style={styles.textarea}
             rows={4}
           />
+        ) : selectedEditorType === "datetime" ? (
+          <input
+            type="datetime-local"
+            value={String(node.value ?? "")}
+            onChange={(event) => onPrimitiveChange(node.path, event.target.value, "string")}
+            style={styles.input}
+          />
+        ) : selectedEditorType === "textEditor" ? (
+          <div style={styles.textEditorWrapper}>
+            <RichTextEditor
+              value={String(node.value ?? "")}
+              onChange={(value) => onPrimitiveChange(node.path, value, "string")}
+              placeholder="Start typing..."
+              height="220px"
+            />
+          </div>
         ) : (
           <input
             type={node.valueType === "number" ? "number" : "text"}
@@ -286,6 +400,18 @@ function toErrorMap(errors: ValidationError[]): Record<string, string[]> {
   }, {});
 }
 
+function isStringEditorType(type: FieldEditorType): type is "textarea" | "datetime" | "textEditor" {
+  return type === "textarea" || type === "datetime" || type === "textEditor";
+}
+
+function toJsonValueType(type: FieldEditorType): JsonValueType {
+  if (isStringEditorType(type)) {
+    return "string";
+  }
+
+  return type;
+}
+
 function isJsonEqual(a: JsonValue, b: JsonValue): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
@@ -311,6 +437,13 @@ const styles = {
     display: "flex",
     gap: "8px",
     alignItems: "center",
+    flexWrap: "wrap",
+  },
+  addKeyRow: {
+    display: "flex",
+    gap: "8px",
+    alignItems: "center",
+    flexWrap: "wrap",
   },
   sectionType: {
     color: "#6b7280",
@@ -360,6 +493,11 @@ const styles = {
     minHeight: "84px",
     resize: "vertical",
     fontFamily: "inherit",
+  },
+  textEditorWrapper: {
+    border: "1px solid #d1d5db",
+    borderRadius: "6px",
+    overflow: "hidden",
   },
   toggleButton: {
     border: "1px solid #d1d5db",

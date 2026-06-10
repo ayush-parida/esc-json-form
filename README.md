@@ -15,6 +15,28 @@ Nested objects and arrays are rendered as expandable sections.
 
 Validation is supported through optional schema rules.
 
+## Supported Field And Editor Types
+
+Supported JSON value types:
+
+- string
+- number
+- boolean
+- null
+- object (section)
+- array (section)
+
+Additional editor mode:
+
+- textarea (for multi-line string editing; stored as string)
+- text editor (rich text HTML editor mode via esc-editor; stored as string)
+- datetime (datetime-local input mode; stored as string)
+
+Date support:
+
+- There is currently no dedicated date field type in the default renderer.
+- Use string for date values (for example, ISO date strings).
+
 ## Packages
 
 - esc-json-form-core: framework-agnostic JSON form engine and state store.

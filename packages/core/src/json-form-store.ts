@@ -166,6 +166,32 @@ export class JsonFormStore {
     return true;
   }
 
+  removeObjectKey(path: PathSegment[], key: string): boolean {
+    const normalizedKey = key.trim();
+    if (normalizedKey.length === 0) {
+      return false;
+    }
+
+    const current = this.getAtPath(path);
+    if (current === undefined || current === null || Array.isArray(current)) {
+      throw new Error("removeObjectKey path must point to an object");
+    }
+
+    if (typeof current !== "object") {
+      throw new Error("removeObjectKey path must point to an object");
+    }
+
+    const currentObject = current as JsonObject;
+    if (!Object.prototype.hasOwnProperty.call(currentObject, normalizedKey)) {
+      return false;
+    }
+
+    const nextObject: JsonObject = { ...currentObject };
+    delete nextObject[normalizedKey];
+    this.setAtPath(path, nextObject);
+    return true;
+  }
+
   removeArrayItem(path: PathSegment[], index: number): void {
     const current = this.getAtPath(path);
 

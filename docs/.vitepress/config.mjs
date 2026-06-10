@@ -5,6 +5,7 @@ export default {
   themeConfig: {
     nav: [
       { text: "Guide", link: "/" },
+      { text: "Field Types", link: "/field-types" },
       { text: "Core API", link: "/core-api" },
       { text: "React", link: "/react" },
       { text: "Angular", link: "/angular" },
@@ -14,6 +15,7 @@ export default {
         text: "Documentation",
         items: [
           { text: "Introduction", link: "/" },
+          { text: "Field Types", link: "/field-types" },
           { text: "Core API", link: "/core-api" },
           { text: "React Usage", link: "/react" },
           { text: "Angular Usage", link: "/angular" },

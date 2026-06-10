@@ -8,6 +8,8 @@ React/Next.js renderer for JSON form editing.
 npm install esc-json-form-react esc-json-form-core
 ```
 
+`esc-editor` is included as a dependency of `esc-json-form-react`, so consumers do not need to install `esc-editor` separately.
+
 ## Usage
 
 ```tsx
@@ -44,6 +46,25 @@ This renders fields like:
 - nested objects/arrays as expandable sections
 - array add/remove controls
 - schema validation messages
+
+## Supported Field Types
+
+Type dropdown options in the React renderer:
+
+- `string`
+- `textarea` (string editor mode)
+- `text editor` (rich text mode via `esc-editor`)
+- `datetime` (datetime-local string mode)
+- `number`
+- `boolean`
+- `null`
+- `object`
+- `array`
+
+Additional notes:
+
+- `object` and `array` are rendered as expandable sections.
+- `date` is not a dedicated built-in field type yet. Use `string` for date values.
 
 ## Programmatic Store
 

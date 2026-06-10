@@ -31,3 +31,18 @@ Editor controls include:
 - Add Key for object sections.
 - Add Item for array sections.
 - `textarea` mode in the type dropdown for string fields.
+
+## Field Types
+
+Type dropdown options:
+
+- `string`
+- `textarea` (string editor mode)
+- `number`
+- `boolean`
+- `null`
+
+Notes:
+
+- `object` and `array` are section nodes with Add Key / Add Item controls.
+- `date` is not a dedicated built-in field type yet. Use `string` for date values.

@@ -58,3 +58,18 @@ export class AppComponent {
 - `getJsonValue()`
 - `setJsonValue(nextValue)`
 - `validationChange` output event
+
+## Supported Field Types
+
+Type dropdown options in the Angular renderer:
+
+- `string`
+- `textarea` (string editor mode)
+- `number`
+- `boolean`
+- `null`
+
+Additional notes:
+
+- `object` and `array` are rendered as expandable sections.
+- `date` is not a dedicated built-in field type yet. Use `string` for date values.

@@ -1,6 +1,6 @@
 {
   "name": "esc-json-form-core",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Framework-agnostic JSON form model and state store",
   "type": "module",
   "main": "dist/index.js",
