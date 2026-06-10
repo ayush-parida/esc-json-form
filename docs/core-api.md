@@ -17,6 +17,7 @@ store.setTypeAtPath(["age"], "string");
 
 store.addArrayItem(["items"]);
 store.removeArrayItem(["items"], 0);
+store.addObjectKey(["profile"], "bio", "string");
 
 store.validate();
 ```

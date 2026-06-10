@@ -22,3 +22,9 @@ export default function Page() {
 ```
 
 If `schema` is omitted, no validation messages are shown.
+
+## Editor Controls
+
+- Use Add Key on object sections to insert new properties.
+- Use Add Item on array sections to append entries.
+- For string fields, you can switch the type dropdown to `textarea` for multi-line editing.

@@ -6,7 +6,8 @@ A multi-framework JSON editor library that converts JSON data into editable form
 
 - Converts JSON primitives into typed form fields.
 - Renders nested objects and arrays as sections.
-- Array controls for add/remove.
+- Object and array controls for add/remove.
+- Textarea mode for string fields.
 - Optional schema-based validation.
 - Works in React, Next.js, Angular, and any TypeScript runtime via core store.
 

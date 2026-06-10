@@ -25,3 +25,9 @@ Schema input is optional:
 ```html
 <esc-json-form-editor [value]="json"></esc-json-form-editor>
 ```
+
+Editor controls include:
+
+- Add Key for object sections.
+- Add Item for array sections.
+- `textarea` mode in the type dropdown for string fields.

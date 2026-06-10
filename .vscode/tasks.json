@@ -1,0 +1,103 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Install: npm ci",
+      "type": "shell",
+      "command": "npm",
+      "args": ["ci"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Clean: dist",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "clean"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Build: packages",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "build"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "Build: sample app",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "sample:build"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Run: sample app (dev)",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "sample:dev"],
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Docs: dev",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "docs:dev"],
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Docs: build",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "docs:build"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Docs: preview",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "docs:preview"],
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Docs: deploy (gh-pages)",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "docs:deploy"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Release: changeset publish",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "release"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Verify: all builds",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Build: packages",
+        "Build: sample app",
+        "Docs: build"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Deploy: everything latest",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Verify: all builds",
+        "Docs: deploy (gh-pages)",
+        "Release: changeset publish"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

@@ -41,6 +41,9 @@ import { JsonFormNodeComponent } from "./json-form-node.component";
         (typeChanged)="onTypeChanged($event.path, $event.valueType)"
         (addArrayItem)="onAddArrayItem($event)"
         (removeArrayItem)="onRemoveArrayItem($event.path, $event.index)"
+        (addObjectKey)="
+          onAddObjectKey($event.path, $event.key, $event.valueType)
+        "
       ></esc-json-form-node>
     </div>
   `,
@@ -162,5 +165,17 @@ export class JsonFormEditorComponent implements OnChanges, OnDestroy {
     }
 
     this.store.removeArrayItem(path, index);
+  }
+
+  onAddObjectKey(
+    path: PathSegment[],
+    key: string,
+    valueType: JsonValueType,
+  ): void {
+    if (!this.store) {
+      return;
+    }
+
+    this.store.addObjectKey(path, key, valueType);
   }
 }

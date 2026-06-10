@@ -13,6 +13,8 @@ import {
   ValidationError,
 } from "esc-json-form-core";
 
+type FieldEditorType = JsonValueType | "textarea";
+
 @Component({
   selector: "esc-json-form-node",
   standalone: true,
@@ -37,6 +39,14 @@ import {
         >
           Add Item
         </button>
+        <button
+          *ngIf="node.valueType === 'object'"
+          type="button"
+          class="action-btn"
+          (click)="onAddObjectKey(node.path)"
+        >
+          Add Key
+        </button>
       </div>
       <div *ngIf="isExpanded" class="section-children">
         <div *ngFor="let child of node.children" class="child-row">
@@ -47,6 +57,7 @@ import {
             (typeChanged)="typeChanged.emit($event)"
             (addArrayItem)="addArrayItem.emit($event)"
             (removeArrayItem)="removeArrayItem.emit($event)"
+            (addObjectKey)="addObjectKey.emit($event)"
           ></esc-json-form-node>
           <button
             *ngIf="
@@ -70,17 +81,18 @@ import {
         <label>{{ node.label }}</label>
 
         <select
-          [value]="node.valueType"
+          [value]="selectedEditorType(node.path, node.valueType)"
           (change)="onTypeChanged(node.path, $any($event.target).value)"
         >
           <option value="string">string</option>
+          <option value="textarea">textarea</option>
           <option value="number">number</option>
           <option value="boolean">boolean</option>
           <option value="null">null</option>
         </select>
 
         <select
-          *ngIf="node.valueType === 'boolean'"
+          *ngIf="selectedEditorType(node.path, node.valueType) === 'boolean'"
           [value]="toBooleanValue(node.value)"
           (change)="
             onPrimitiveChanged(
@@ -94,10 +106,17 @@ import {
           <option value="false">false</option>
         </select>
 
-        <input *ngIf="node.valueType === 'null'" [value]="'null'" disabled />
+        <input
+          *ngIf="selectedEditorType(node.path, node.valueType) === 'null'"
+          [value]="'null'"
+          disabled
+        />
 
         <input
-          *ngIf="node.valueType === 'string' || node.valueType === 'number'"
+          *ngIf="
+            selectedEditorType(node.path, node.valueType) === 'string' ||
+            selectedEditorType(node.path, node.valueType) === 'number'
+          "
           [type]="node.valueType === 'number' ? 'number' : 'text'"
           [value]="node.value"
           (input)="
@@ -108,6 +127,15 @@ import {
             )
           "
         />
+
+        <textarea
+          *ngIf="selectedEditorType(node.path, node.valueType) === 'textarea'"
+          [value]="node.value"
+          rows="4"
+          (input)="
+            onPrimitiveChanged(node.path, $any($event.target).value, 'string')
+          "
+        ></textarea>
       </div>
       <div *ngIf="fieldError(node.path)" class="error-text">
         {{ fieldError(node.path) }}
@@ -172,6 +200,7 @@ import {
       }
 
       input,
+      textarea,
       select,
       .toggle-btn {
         padding: 6px;
@@ -209,8 +238,14 @@ export class JsonFormNodeComponent {
     path: PathSegment[];
     index: number;
   }>();
+  @Output() addObjectKey = new EventEmitter<{
+    path: PathSegment[];
+    key: string;
+    valueType: JsonValueType;
+  }>();
 
   isExpanded = true;
+  private editorTypeByPath: Record<string, FieldEditorType> = {};
 
   toBooleanValue(value: unknown): string {
     return String(Boolean(value));
@@ -228,7 +263,16 @@ export class JsonFormNodeComponent {
     });
   }
 
-  onTypeChanged(path: PathSegment[], valueType: JsonValueType): void {
+  onTypeChanged(path: PathSegment[], valueType: FieldEditorType): void {
+    const key = pathToKey(path);
+
+    if (valueType === "textarea") {
+      this.editorTypeByPath[key] = "textarea";
+      this.typeChanged.emit({ path, valueType: "string" });
+      return;
+    }
+
+    delete this.editorTypeByPath[key];
     this.typeChanged.emit({ path, valueType });
   }
 
@@ -248,6 +292,26 @@ export class JsonFormNodeComponent {
     const match = this.errors.find((error) => samePath(error.path, path));
     return match?.message ?? "";
   }
+
+  selectedEditorType(
+    path: PathSegment[],
+    fallback: JsonValueType,
+  ): FieldEditorType {
+    return this.editorTypeByPath[pathToKey(path)] ?? fallback;
+  }
+
+  onAddObjectKey(path: PathSegment[]): void {
+    const key = window.prompt("Enter new key name");
+    if (!key) {
+      return;
+    }
+
+    this.addObjectKey.emit({ path, key, valueType: "string" });
+  }
+}
+
+function pathToKey(path: PathSegment[]): string {
+  return path.map((segment) => String(segment)).join(".");
 }
 
 function samePath(a: PathSegment[], b: PathSegment[]): boolean {
