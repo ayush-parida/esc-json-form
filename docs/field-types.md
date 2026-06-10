@@ -38,13 +38,17 @@ Angular renderer currently supports:
 
 - `string`
 - `textarea`
+- `text editor` (extended multi-line string editor mode)
+- `datetime` (`datetime-local` input)
 - `number`
 - `boolean`
 - `null`
+- `object`
+- `array`
 
 ## Date/Datetime
 
 There is no separate core `date` type.
 
 - Use JSON `string` values for date/time content.
-- In React, `datetime` mode provides `datetime-local` UI while storing a string value.
+- In React and Angular, `datetime` mode provides `datetime-local` UI while storing a string value.

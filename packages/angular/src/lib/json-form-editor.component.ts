@@ -44,6 +44,7 @@ import { JsonFormNodeComponent } from "./json-form-node.component";
         (addObjectKey)="
           onAddObjectKey($event.path, $event.key, $event.valueType)
         "
+        (removeObjectKey)="onRemoveObjectKey($event.path, $event.key)"
       ></esc-json-form-node>
     </div>
   `,
@@ -177,5 +178,13 @@ export class JsonFormEditorComponent implements OnChanges, OnDestroy {
     }
 
     this.store.addObjectKey(path, key, valueType);
+  }
+
+  onRemoveObjectKey(path: PathSegment[], key: string): void {
+    if (!this.store) {
+      return;
+    }
+
+    this.store.removeObjectKey(path, key);
   }
 }

@@ -65,9 +65,13 @@ Type dropdown options in the Angular renderer:
 
 - `string`
 - `textarea` (string editor mode)
+- `text editor` (extended multi-line string editor mode)
+- `datetime` (datetime-local string mode)
 - `number`
 - `boolean`
 - `null`
+- `object`
+- `array`
 
 Additional notes:
 
