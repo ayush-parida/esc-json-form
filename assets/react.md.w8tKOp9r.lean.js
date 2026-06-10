@@ -1,0 +1,1 @@
+import{_ as i,o as a,c as t,a0 as e}from"./chunks/framework.D-L4ICHU.js";const c=JSON.parse('{"title":"React Usage","description":"","frontmatter":{},"headers":[],"relativePath":"react.md","filePath":"react.md"}'),n={name:"react.md"};function l(h,s,p,d,k,o){return a(),t("div",null,[...s[0]||(s[0]=[e("",13)])])}const E=i(n,[["render",l]]);export{c as __pageData,E as default};

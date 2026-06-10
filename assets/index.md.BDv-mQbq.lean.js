@@ -1,0 +1,1 @@
+import{_ as i,o as a,c as e,a0 as t}from"./chunks/framework.D-L4ICHU.js";const c=JSON.parse('{"title":"ESC JSON Form","description":"","frontmatter":{},"headers":[],"relativePath":"index.md","filePath":"index.md"}'),l={name:"index.md"};function n(r,s,h,p,d,o){return a(),e("div",null,[...s[0]||(s[0]=[t("",16)])])}const E=i(l,[["render",n]]);export{c as __pageData,E as default};
